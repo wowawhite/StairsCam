@@ -10,20 +10,31 @@
 import numpy as np
 import socket
 
+import time
+
+
+
+
+
+
+
 def read_camera():
 	#check out IP of camera
 	cameraIP = "192.168.178.69"
 	controlport = 8080
 	videoport = 50002
 	# protocol parameter
-	package_length = 13176 # in bytes
-
+	package_length = 13176  # in bytes
+	# beware data big-endian
 	header_length = 376
 	data_length = 12800
 	# protocol commands
 	letter_D = 'D'.encode('ascii')  # radial distance
+	letter_X = 'X'.encode('ascii')  # X cartesian coordinates
+	letter_Y = 'Y'.encode('ascii')  # Y cartesian coordinates
 	letter_Z = 'Z'.encode('ascii')  # cartesian z distance
 	letter_q = 'q'.encode('ascii')  # stop socket connection
+
 	# numpy parameter
 	dt = np.dtype('b')  # byte, native byte order
 	#data_bytes = np.array(package_length, dt)
@@ -45,7 +56,7 @@ def read_camera():
 	# connection timeout how much needed?
 
 	print("Sending data request")
-	clientSocket.sendall(letter_Z)
+	clientSocket.sendall(letter_X)
 
 	print("Waiting for response")
 	try:
@@ -61,19 +72,23 @@ def read_camera():
 	#clientSocket.shutdown()
 	clientSocket.close()
 
+	return msg_bin
+"""
 	print("Data received/n")
 	print(len(msg_bin))
 	print(type(msg_bin))
+"""
+for i in range(3):
+	#print(len(read_camera()))
 
-
-
-
-	"""
-	dummyWrite = (byte"nope")
-	with open("C:/Users/Wowa/Documents/MEGA/Software/Pycharm/PythonLearning/check.txt", 'wb') as f:
-		f.write(dummyWrite)
+	with open("/home/wowa/Pycharm/StairsCam/check{0}.txt".format(i), 'wb') as f:
+		#msg_bin = read_camera()
+		f.write(read_camera())
 		print("Wrote data to file")
-	f.close()
-	"""
+		f.close()
+		time.sleep(1)
+
+
+
 if __name__ == '__main__':
 	read_camera()
