@@ -17,9 +17,9 @@ def read_camera():
 	videoport = 50002
 	# protocol parameter
 	package_length = 13176 # in bytes
+
 	header_length = 376
 	data_length = 12800
-
 	# protocol commands
 	letter_D = 'D'.encode('ascii')  # radial distance
 	letter_Z = 'Z'.encode('ascii')  # cartesian z distance
@@ -37,9 +37,9 @@ def read_camera():
 	"""
 
 	clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	clientSocket.setblocking(True)
+	#clientSocket.setblocking(1)
 	# put exception handling for no connection here
-	clientSocket.settimeout(60000)
+	clientSocket.settimeout(1.2)
 	clientSocket.connect((cameraIP, videoport))
 
 	# connection timeout how much needed?
@@ -49,8 +49,10 @@ def read_camera():
 
 	print("Waiting for response")
 	try:
-		header_bin = clientSocket.recv(header_length)
-		data_bin = clientSocket.recv(data_length)
+
+		msg_bin = clientSocket.recv(package_length)
+		#msg = msg_bin.decode(encoding='ascii')
+		# wholedata = np.fromstring(, 'b')
 		# The return value is a string representing the data received.
 	except socket.timeout:
 		print("Timeout Exception")
@@ -59,19 +61,12 @@ def read_camera():
 	#clientSocket.shutdown()
 	clientSocket.close()
 
-	header_long = np.fromstring(header_bin, 'b')
-	data_long = np.fromstring(data_bin, 'b')
-	print("datatyp: ", type(data_long))
-	#data_long.shape = (50, 64) #row,column
-
 	print("Data received/n")
-	#while i <= len(data):
+	print(len(msg_bin))
+	print(type(msg_bin))
 
-	#return data_long
 
-	for x in np.nditer(header_long):
-		print(x)
-		print()
+
 
 	"""
 	dummyWrite = (byte"nope")
