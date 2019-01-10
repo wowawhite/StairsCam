@@ -81,7 +81,7 @@ def read_camera():
 for i in range(3):
 	#print(len(read_camera()))
 
-	with open("/home/wowa/Pycharm/StairsCam/check{0}.txt".format(i), 'wb') as f:
+	with open("check{0}.txt".format(i), 'wb') as f:
 		#msg_bin = read_camera()
 		f.write(read_camera())
 		print("Wrote data to file")
