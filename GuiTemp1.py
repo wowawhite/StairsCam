@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#
+
 ############### file info ######################################################
-# written by Waldemar Kulajev using python2.7 and Pyqt4.8
-#
+# written by Waldemar Kulajev
 # used pwm pins red: P9_22, green: P8_13, blue: P8_19
 # motor control pin 8.12, led control pin p8.14
-# pwm frequency 19100
+# pwm frequency 19000
 # red=positive
 # green=neutral
 # blue=negative
@@ -16,11 +15,13 @@ import sys
 import os
 import tweepy
 import jsonpickle
+import numpy as np
 import pyqtgraph as pg
 from collections import deque
 from datetime import datetime
 from PyQt4 import QtGui, QtCore, QtTest, QtNetwork
 from PyQt4.QtCore import QTimer, QCoreApplication, QUrl
+import time
 import datetime
 
 if __debug__:
@@ -32,13 +33,6 @@ try:
 	_fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
 	_fromUtf8 = lambda s: s
-
-global API_KEY
-global API_SECRET
-
-# Replace the API_KEY and API_SECRET with your application's key and secret.
-API_KEY = "xxx"
-API_SECRET = "xxx"
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -94,7 +88,7 @@ class MainWidget(QtGui.QTabWidget):
 		super(MainWidget, self).__init__(parent)
 		self.manuellFlag = False
 		self.offlineFlag = True
-		self.PWM_const = 19100
+		self.PWM_const = 19500
 		if __debug__:
 			self.homePath = "C:\\Users\\Wowa\\Documents\\MEGA\\Software\\PythonTesting\\Assembly_GUI3\\"
 		else:
@@ -287,6 +281,7 @@ class MainWidget(QtGui.QTabWidget):
 		self.quitButton = QtGui.QPushButton('Maschine ausschalten', self)
 		self.quitButton.setCheckable(False)
 		self.quitButton.setFocusPolicy(QtCore.Qt.NoFocus)
+
 		# layout and geometry
 
 		self.redGroupboxLayout.addWidget(self.redLcd)
@@ -502,16 +497,19 @@ else: pass
 
 def writePWMport(self, red, green, blue):
 	if (self.manuellFlag == False):
-		_outR = int(red * 0.7 + 30)
-		_outG = int(green * 0.7 + 30)
-		_outB = int(blue * 0.7 + 30)
 		if __debug__:
+			_outR = int(red * 0.7 + 30)
+			_outG = int(green * 0.7 + 30)
+			_outB = int(blue * 0.7 + 30)
 			print("P9_22", _outR, "P8_13", _outG, "P8_19", _outB)
 		else:
+			_outR = int(red * 0.7 + 30)
 			PWM.set_duty_cycle("P9_22", _outR)
 			QtTest.QTest.qWait(1500)
+			_outG = int(green * 0.7 + 30)
 			PWM.set_duty_cycle("P8_13", _outG)
 			QtTest.QTest.qWait(1500)
+			_outB = int(blue * 0.7 + 30)
 			PWM.set_duty_cycle("P8_19", _outB)
 	else:
 		pass
@@ -560,7 +558,16 @@ def keyPressEvent(self, event):
 		QtCore.QCoreApplication.quit()
 
 
+# test foo for global exception control.
+# Idee: Input:fehlercode, output:exception
+def exceptionControl(self, inputErr):
+	pass
+
+
 def grabTwitterData(self):
+	API_KEY = "GbqSuFsshZOEBm2sckzOPUkaX"
+	API_SECRET = "SaUPOfw0eMUMhwRbekKsKyQxg7rO3eZ2Lh4g1Ul8UD3Zpc6eZo"
+	# Replace the API_KEY and API_SECRET with your application's key and secret.
 	auth = tweepy.AppAuthHandler(API_KEY, API_SECRET)
 	# Exception bei fehlender internetverbindung!
 	api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
@@ -686,16 +693,13 @@ def main():
 	win = MainWindow()
 
 	############blank cursor#################
-
+	# --warning. Think before enabling this--#
 	if __debug__:
 		pass
 	else:
 		win.showFullScreen()
 		app.setOverrideCursor(QtCore.Qt.BlankCursor)
 	########################################
-	# win.resize(700, 400)
-	# win.setWindowTitle('Hedonometer')
-	# win.setWindowIcon(QtGui.QIcon('ostfalia.png'))
 
 	win.show()
 

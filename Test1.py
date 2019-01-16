@@ -1,7 +1,5 @@
 import numpy as np
 
-byt = b'01010010'
-
-flt = 85.234
-flt.encode
-print(len(byt))
+np.set_printoptions(precision=2)
+Mat = np.random.rand(50, 64)  # random matrix 2D
+print(Mat)

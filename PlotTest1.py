@@ -41,13 +41,16 @@ w.addItem(g)
 
 
 
-x = Mat[:, :1]  # 0-63 Mat[:1, :].shape = (1, 64)
-y = Mat[:1, :]  # 0-49
+#x = Mat[:, :1]  # 0-63 Mat[:1, :].shape = (1, 64)
+#y = Mat[:1, :]  # 0-49
+y = np.arange(64)
+x = np.arange(50)
 z = Mat
 
 
+p4 = gl.GLSurfacePlotItem(x=x, y = y, shader='heightColor', computeNormals=False, smooth=False)
 
-p4 = gl.GLSurfacePlotItem(x=x[:,0], y = y[0,:], shader='heightColor', computeNormals=False, smooth=False)
+#p4 = gl.GLSurfacePlotItem(x=x[:,0], y = y[0,:], shader='heightColor', computeNormals=False, smooth=False)
 #p4 = gl.GLSurfacePlotItem(x=x[:,0], y = y[0,:], shader='heightColor', computeNormals=False, smooth=False)
 
 # whats this?
@@ -62,7 +65,7 @@ w.addItem(p4)
 
 
 def update():
-	global p4, z, index
+	global p4, z,
 
 	p4.setData(z=z)
 
