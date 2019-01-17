@@ -98,13 +98,14 @@ p4 = gl.GLSurfacePlotItem(x=x, y = y, shader='heightColor', computeNormals=False
 
 # whats this?
 #p4.shader()['colorMap'] = np.array([0.2, 2, 0.5, 0.2, 1, 1, 0.2, 0, 2])
-p4.shader()['colorMap'] = np.array([0.2, 2, 0.5, 0.2, 1, 1, 0.2, 0, 2])
+p4.shader()['colorMap'] = np.array([2, 20, 5, 2, 10, 10, 2, 0, 20])
 
 # translate coordinates starting point (x,y,z)
 # optimum (-5,-5,0)
 p4.translate(-25, -25, 0)
-#w.addItem(p4)
+w.addItem(p4)
 
+printflag = True
 
 
 def update():
@@ -154,11 +155,19 @@ def update():
 	print(len(view))
 	#usefuldata = np.fromstring(view, dt)
 	usefuldata = np.asarray(view, dt)
-	stage1 = usefuldata[94:3294]
+	stage1 = usefuldata[94:3294]/10
+	print(usefuldata.shape)
 	useful_matrix = (np.reshape(stage1, (64, 50)))
 	print(useful_matrix.shape)
-	print(useful_matrix[0:64, 0:0])
-	print(useful_matrix)
+	#print(useful_matrix[0:64, 0:0])
+	#print(useful_matrix)
+	global printflag
+	if printflag == True:
+		np.savetxt('text.txt', useful_matrix, fmt='%.0f')
+		printflag=False
+		print("Printed textfile")
+
+
 	global p4
 
 	p4.setData(z=useful_matrix)

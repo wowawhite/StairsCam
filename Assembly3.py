@@ -51,11 +51,11 @@ print("Waiting for response")
 
 
 dt = np.dtype('>f4')
-bytedata = np.empty(13176, dtype=dt)
+#bytedata = np.empty(13176, dtype=dt)
 amount_received = 0
 #toread = 13176
 toread = 4
-
+bytedata = ''
 try:
 	"""
 
@@ -64,20 +64,25 @@ try:
 		chunk_bin = clientSocket.recv_into(usefuldata, int(package_length))
 		amount_received += chunk_bin
 
-	"""
+	
 
 	while toread:
 		# error => msg_bin is overwritten everytime I call recv
 		nbytes = clientSocket.recv_into(bytedata, 4)
 		#view = view[nbytes:]
 		toread -= nbytes
+"""
+	while amount_received < package_length:
+		# error => msg_bin is overwritten everytime I call recv
+		chunk_bin = clientSocket.recv(package_length)
+		bytedata += str(chunk_bin)
+		amount_received += len(chunk_bin)
 
 
-	#print("Data received. %s bytes" % amount_received)
+	print("Data received. %s bytes" % amount_received)
 	print(len(bytedata))
-	print(bytedata.dtype)
-	print(bytedata)
-	#print(type(usefuldata))
+
+
 except socket.timeout:
 	print("Timeout Exception")
 except socket.error as sockerr:
@@ -87,7 +92,9 @@ if socket:
 	print("Closing connection")
 	clientSocket.sendall(letter_q)
 	clientSocket.close()
-np.savetxt('text.txt',bytedata,fmt='%.0f')
+
+usefuldata = np.fromstring(bytedata, dt)
+np.savetxt('text.txt',usefuldata,fmt='%.0f')
 # recalcuate array
 
 
