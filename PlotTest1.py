@@ -10,9 +10,11 @@ import numpy as np
 
 # matrix calculation
 
-
-Mat = np.random.rand(50, 64)  # random matrix 2D
-Mat = Mat*10
+# global coordinates x=50, y=64
+#Mat = np.random.rand(50, 64)  # random matrix 2D
+Mat = np.zeros((50,64), dtype=float)
+Mat[49,63] = 1
+Mat = Mat*50
 
 
 
@@ -25,24 +27,38 @@ app = QtGui.QApplication([])
 
 
 w = gl.GLViewWidget()
+w.resize(1400, 900)
 w.show()
 w.setWindowTitle('pyqtgraph example: GLSurfacePlot')
-w.setCameraPosition(distance=40)
+w.setCameraPosition(distance=200)
 
 ## Add a grid to the view
-g = gl.GLGridItem()
+gx = gl.GLGridItem()
 
 # grid scale
-g.scale(1, 1, 1)
 
-g.setDepthValue(1)  # draw grid after surfaces since they may be translucent
-
-w.addItem(g)
+# (z,x,?) (local coordinates system)
+gx.scale(5, 5, 0)
+#gx.setDepthValue(10)  # draw grid after surfaces since they may be translucent
+gx.rotate(90, 0, 1, 0)
+# translation (x, y, z)global coordinates
+gx.translate(-50, 0, 50)
+w.addItem(gx)
+gy = gl.GLGridItem()
+gy.scale(5, 5, 0)
+gy.rotate(90, 1, 0, 0)
+gy.translate(0, -50, 50)
+w.addItem(gy)
+gz = gl.GLGridItem()
+gz.scale(5, 5, 0)
+gz.translate(0, 0, 0)
+w.addItem(gz)
 
 
 
 #x = Mat[:, :1]  # 0-63 Mat[:1, :].shape = (1, 64)
 #y = Mat[:1, :]  # 0-49
+
 y = np.arange(64)
 x = np.arange(50)
 z = Mat
@@ -59,13 +75,13 @@ p4.shader()['colorMap'] = np.array([0.2, 2, 0.5, 0.2, 1, 1, 0.2, 0, 2])
 
 # translate coordinates starting point (x,y,z)
 # optimum (-5,-5,0)
-p4.translate(-5, -5, 0)
+p4.translate(-25, -25, 0)
 w.addItem(p4)
 
 
 
 def update():
-	global p4, z,
+	global p4, z
 
 	p4.setData(z=z)
 

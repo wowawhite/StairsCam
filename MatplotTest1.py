@@ -1,8 +1,9 @@
-#!/usr/bin/python3
-# -*- coding: <UTF-8> -*-
-# This is client.py file# import socket
-# TODO byte stream to 4 bytes
-# TODO implement fromstring tostring methods, not frombuffer
+
+from numpy.random import uniform, seed
+from matplotlib.mlab import griddata
+import matplotlib.pyplot as plt
+import numpy as np
+# make up data.
 
 import numpy as np
 import socket
@@ -79,21 +80,43 @@ def Main():
 		clientSocket.sendall(letter_q)
 		clientSocket.close()
 
-	""" validate data here:
-	dt = np.dtype('>f4')
-	usefuldata = np.frombuffer(msg_bin, dt)
-	print(type(usefuldata))
-	print(usefuldata)
-	print(len(usefuldata))
-	print(len(msg_bin))
+	cutmatrix = usefuldata[94:3294]
+	print(cutmatrix[0:50])
+	useful_matrix = (np.reshape(cutmatrix, (64, 50)))
 
-	dummyWrite = (byte"nope")
-	with open("C:/Users/Wowa/Documents/MEGA/Software/Pycharm/PythonLearning/check.txt", 'wb') as f:
-		f.write(dummyWrite)
-		print("Wrote data to file")
-	f.close()
-	"""
+
+	fig = plt.figure(figsize=(64, 50))
+
+	ax = fig.add_subplot(111)
+	ax.set_title('colorMap')
+	plt.imshow(useful_matrix)
+	ax.set_aspect('equal')
+	plt.colorbar(orientation='vertical')
+	plt.show()
+
+
+
+	plt.matshow(useful_matrix)
+	plt.grid()
+	plt.show()
 
 
 if __name__ == '__main__':
 	Main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#npts = int(raw_input('enter # of random points to plot:'))

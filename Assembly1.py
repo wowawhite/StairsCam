@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: <UTF-8> -*-
 # This is client.py file# import socket
+ # TODO check shape of np array. obviously its diffrent
+ # TODO scale Z data. now incoming floats about 1.000.000.000
+ # maybe cast to int for speed?
 
 
 import numpy as np
@@ -44,20 +47,20 @@ class Window(QMainWindow):
 		self.w = gl.GLViewWidget()
 		self.w.show()
 		self.w.setWindowTitle('pyqtgraph example: GLSurfacePlot')
-		self.w.setCameraPosition(distance=40)
+		self.w.setCameraPosition(distance=200)
 
 		## Add a grid to the view
 		self.g = gl.GLGridItem()
 
 		# grid scale
-		self.g.scale(1, 1, 1)
+		self.g.scale(10, 10, 10)
 
-		self.g.setDepthValue(1)  # draw grid after surfaces since they may be translucent
-
+		self.g.setDepthValue(10)  # draw grid after surfaces since they may be translucent
+		#self.g.size(700,400 )
 		self.w.addItem(self.g)
 
-		self.y = np.arange(64)
-		self.x = np.arange(50)
+		self.y = np.arange(50)
+		self.x = np.arange(64)
 
 		self.p4 = gl.GLSurfacePlotItem(x=self.x, y=self.y, shader='heightColor', computeNormals=False, smooth=False)
 		# p4 = gl.GLSurfacePlotItem(x=x[:,0], y = y[0,:], shader='heightColor', computeNormals=False, smooth=False)
@@ -99,7 +102,7 @@ class Window(QMainWindow):
 		clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		clientSocket.setblocking(False)
 		# clientSocket.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
-		clientSocket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 20000)  # chang rcv buf size
+		clientSocket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 13176)  # chang rcv buf size
 		# clientSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # good idea?
 		clientSocket.settimeout(1.5)
 
@@ -138,7 +141,8 @@ class Window(QMainWindow):
 			clientSocket.sendall(letter_q)
 			clientSocket.close()
 
-		useful_matrix = np.reshape(usefuldata[94:3294], (50, 64))
+
+		useful_matrix = (np.reshape(usefuldata[94:3294], (64, 50)))/100000000
 
 		return useful_matrix
 
