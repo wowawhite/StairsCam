@@ -33,21 +33,14 @@ clientSocket.setblocking(True)
 clientSocket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 20000)  # chang rcv buf size
 clientSocket.settimeout(1.5)
 # clientSocket.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
-#clientSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # good idea?
-
-# only this part should be repeated
-
+clientSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # good idea?
 
 
 # matrix calculation
 
 # global coordinates x=50, y=64
-#Mat = np.random.rand(50, 64)  # random matrix 2D
 
-
-## reshape nicht notwendig
 np.set_printoptions(precision=2)
-
 
 ## Create a GL View widget to display data
 app = QtGui.QApplication([])
@@ -105,8 +98,6 @@ p4.shader()['colorMap'] = np.array([2, 20, 5, 2, 10, 10, 2, 0, 20])
 p4.translate(-25, -25, 0)
 w.addItem(p4)
 
-printflag = True
-
 
 def update():
 	clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -120,29 +111,23 @@ def update():
 	except Exception as e:
 		print("Other exception: %s" % str(e))
 
-	print("Sending data request D")
+	#print("Sending data request D")
 	clientSocket.sendall(letter_D)
 
 	# receiving process. tricking recv into loop
-	print("Waiting for response")
+	#print("Waiting for response")
 	dt = np.dtype('>f4')
 
-	buf = bytearray(package_length)
-	view = memoryview(buf)
-	#usefuldata = np.empty(3294, dtype=dt)
+	bytedata = b''
 	amount_received = 0
 	try:
 
 		while amount_received < package_length:
 			# error => msg_bin is overwritten everytime I call recv
-			chunk = clientSocket.recv_into(view, package_length)
-			#chunk_bin = clientSocket.recv_into(usefuldata, int(package_length))
-			amount_received += chunk
+			chunk_bin = clientSocket.recv(package_length)
+			bytedata += chunk_bin
+			amount_received += len(chunk_bin)
 
-
-		#print("Data received. %s bytes" % amount_received)
-		#print(len(usefuldata))
-		#print(type(usefuldata))
 	except socket.timeout:
 		print("Timeout Exception")
 	except socket.error as sockerr:
@@ -152,25 +137,17 @@ def update():
 		#print("Closing connection")
 		clientSocket.sendall(letter_q)
 		clientSocket.close()
-	print(len(view))
-	#usefuldata = np.fromstring(view, dt)
-	usefuldata = np.asarray(view, dt)
-	stage1 = usefuldata[94:3294]/10
-	print(usefuldata.shape)
-	useful_matrix = (np.reshape(stage1, (64, 50)))
-	print(useful_matrix.shape)
-	#print(useful_matrix[0:64, 0:0])
-	#print(useful_matrix)
-	global printflag
-	if printflag == True:
-		np.savetxt('text.txt', useful_matrix, fmt='%.0f')
-		printflag=False
-		print("Printed textfile")
 
+	usefuldata = np.fromstring(bytedata, dt)
+	#print(usefuldata.shape)
+	cutheader = usefuldata[94:3295]
+	#print(cutheader.shape)
+	useful_matrix = np.reshape(cutheader, (50, 64))
+	reshapedmatrix = np.transpose(useful_matrix)
 
 	global p4
 
-	p4.setData(z=useful_matrix)
+	p4.setData(z=reshapedmatrix)
 
 
 timer = QtCore.QTimer()

@@ -95,24 +95,13 @@ if socket:
 
 usefuldata = np.fromstring(bytedata, dt)
 print(usefuldata.shape)
-cutheader =  usefuldata[94:3295]
+cutheader = usefuldata[94:3295]
 print(cutheader.shape)
 useful_matrix = np.reshape(cutheader, (50, 64))
-np.savetxt('text.txt',useful_matrix,fmt='%.0f')
-# recalcuate array
-
-
-#usefuldata = np.fromstring(view, dt)
-#usefuldata = np.asarray(view, dt)
-"""
-print(usefuldata.size)
-stage1 = usefuldata[94:3295]
-useful_matrix = np.reshape(stage1, (50, 64))
-print(useful_matrix.shape)
-#print(useful_matrix[0:1, 0:64])
-print(useful_matrix)
+np.savetxt('text.txt', useful_matrix, fmt='%.0f')
 
 
 
-"""
+
+
 
