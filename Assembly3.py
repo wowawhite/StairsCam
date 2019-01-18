@@ -55,7 +55,7 @@ dt = np.dtype('>f4')
 amount_received = 0
 #toread = 13176
 toread = 4
-bytedata = ''
+bytedata = b''
 try:
 	"""
 
@@ -75,7 +75,7 @@ try:
 	while amount_received < package_length:
 		# error => msg_bin is overwritten everytime I call recv
 		chunk_bin = clientSocket.recv(package_length)
-		bytedata += str(chunk_bin)
+		bytedata += chunk_bin
 		amount_received += len(chunk_bin)
 
 
@@ -94,7 +94,11 @@ if socket:
 	clientSocket.close()
 
 usefuldata = np.fromstring(bytedata, dt)
-np.savetxt('text.txt',usefuldata,fmt='%.0f')
+print(usefuldata.shape)
+cutheader =  usefuldata[94:3295]
+print(cutheader.shape)
+useful_matrix = np.reshape(cutheader, (50, 64))
+np.savetxt('text.txt',useful_matrix,fmt='%.0f')
 # recalcuate array
 
 
