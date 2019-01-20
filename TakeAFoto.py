@@ -6,8 +6,6 @@ import numpy as np
 import socket
 import binascii
 
-
-
 # check out IP of camera
 cameraIP = "192.0.0.69"
 controlport = 8080
@@ -27,14 +25,13 @@ letter_q = 'q'.encode('ascii')  # stop socket connection
 # socket configuration
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientSocket.setblocking(True)
-#clientSocket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 20000)  # chang rcv buf size
+# clientSocket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 20000)  # chang rcv buf size
 clientSocket.settimeout(1.5)
 # clientSocket.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
 
 
 ## reshape nicht notwendig
 np.set_printoptions(precision=2)
-
 
 try:
 	clientSocket.connect(server_address)
@@ -49,11 +46,10 @@ clientSocket.sendall(letter_D)
 # receiving process. tricking recv into loop
 print("Waiting for response")
 
-
 dt = np.dtype('>f4')
-#bytedata = np.empty(13176, dtype=dt)
+# bytedata = np.empty(13176, dtype=dt)
 amount_received = 0
-#toread = 13176
+# toread = 13176
 toread = 4
 bytedata = b''
 try:
@@ -64,7 +60,7 @@ try:
 		chunk_bin = clientSocket.recv_into(usefuldata, int(package_length))
 		amount_received += chunk_bin
 
-	
+
 
 	while toread:
 		# error => msg_bin is overwritten everytime I call recv
@@ -77,7 +73,6 @@ try:
 		chunk_bin = clientSocket.recv(package_length)
 		bytedata += chunk_bin
 		amount_received += len(chunk_bin)
-
 
 	print("Data received. %s bytes" % amount_received)
 	print(len(bytedata))
@@ -98,7 +93,7 @@ print(usefuldata.shape)
 cutheader = usefuldata[94:3295]
 print(cutheader.shape)
 useful_matrix = np.reshape(cutheader, (50, 64))
-np.savetxt('text.txt', useful_matrix, fmt='%.0f')
+np.savetxt('text.txt', useful_matrix, fmt='%.4f')
 
 
 

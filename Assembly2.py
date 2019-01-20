@@ -8,7 +8,7 @@ import pyqtgraph.opengl as gl
 import numpy as np
 import socket
 import binascii
-
+import matplotlib.pyplot as plt
 
 
 # check out IP of camera
@@ -84,14 +84,27 @@ w.addItem(gz)
 x = np.arange(64)
 y = np.arange(50)
 
-p4 = gl.GLSurfacePlotItem(x=x, y = y, shader='heightColor', computeNormals=False, smooth=False)
+colors = np.ones((64, 50, 4), dtype=float)
+
+colors[:,:,0] = 0
+colors[:,:,1] = 1
+colors[:,:,2] = 3
+colors[:,:,3] = 5
+
+# shader: shaded, heightColor
+
+p4 = gl.GLSurfacePlotItem(x=x, y = y, shader = 'shaded',
+                            colors = colors.reshape(64*50,4),computeNormals=True, smooth=True)
+# , colors=rgba_img
+
+#p4 = gl.GLSurfacePlotItem(x=x, y = y, shader='heightColor', computeNormals=False, smooth=False)
 
 #p4 = gl.GLSurfacePlotItem(x=x[:,0], y = y[0,:], shader='heightColor', computeNormals=False, smooth=False)
 #p4 = gl.GLSurfacePlotItem(x=x[:,0], y = y[0,:], shader='heightColor', computeNormals=False, smooth=False)
 
 # whats this?
 #p4.shader()['colorMap'] = np.array([0.2, 2, 0.5, 0.2, 1, 1, 0.2, 0, 2])
-p4.shader()['colorMap'] = np.array([2, 20, 5, 2, 10, 10, 2, 0, 20])
+#p4.shader()['colorMap'] = np.array([2, 20, 5, 2, 10, 10, 2, 0, 20])
 
 # translate coordinates starting point (x,y,z)
 # optimum (-5,-5,0)
@@ -140,7 +153,7 @@ def update():
 
 	usefuldata = np.fromstring(bytedata, dt)
 	#print(usefuldata.shape)
-	cutheader = usefuldata[94:3295]
+	cutheader = usefuldata[94:3295]*3
 	#print(cutheader.shape)
 	useful_matrix = np.reshape(cutheader, (50, 64))
 	reshapedmatrix = np.transpose(useful_matrix)
