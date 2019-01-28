@@ -11,11 +11,11 @@ import numpy as np
 # matrix calculation
 
 # global coordinates x=50, y=64
-#Mat = np.random.rand(50, 64)  # random matrix 2D
-Mat = np.zeros((50,64), dtype=float)
-Mat[49,63] = 1
-Mat = Mat*50
+Mat = np.random.rand(50, 64)  # random matrix 2D
+#Mat = np.zeros((50,64), dtype=float)
+#Mat[49,63] = 1
 
+Mat = Mat*10
 
 
 ## reshape nicht notwendig
@@ -63,15 +63,35 @@ y = np.arange(64)
 x = np.arange(50)
 z = Mat
 
+"""
 
-p4 = gl.GLSurfacePlotItem(x=x, y = y, shader='heightColor', computeNormals=False, smooth=False)
+colors = np.ones((64, 50, 10), dtype=float)
+colormap = np.linspace(np.amin(Mat), np.amax(Mat), 10)
+for i in range(10):
+	colors[:,:,i] = colormap[i]
+
+
+p4 = gl.GLSurfacePlotItem(x=x, y = y, shader = 'shaded', colors = colors.reshape(64*50,10), computeNormals=False, smooth=False)
+"""
+
+colors = np.ones((64, 50, 4), dtype=float)
+colormap = np.linspace(np.amin(Mat), np.amax(Mat), 4)
+for i in range(4):
+	colors[:,:,i] = colormap[i]
+
+
+# shader: shaded, heightColor
+
+p4 = gl.GLSurfacePlotItem(x=x, y = y, shader = 'shaded',
+                            colors = colors.reshape(64*50,4),computeNormals=True, smooth=True)
+
 
 #p4 = gl.GLSurfacePlotItem(x=x[:,0], y = y[0,:], shader='heightColor', computeNormals=False, smooth=False)
 #p4 = gl.GLSurfacePlotItem(x=x[:,0], y = y[0,:], shader='heightColor', computeNormals=False, smooth=False)
 
 # whats this?
 #p4.shader()['colorMap'] = np.array([0.2, 2, 0.5, 0.2, 1, 1, 0.2, 0, 2])
-p4.shader()['colorMap'] = np.array([0.2, 2, 0.5, 0.2, 1, 1, 0.2, 0, 2])
+#p4.shader()['colorMap'] = np.array([0.2, 2, 0.5, 0.2, 1, 1, 0.2, 0, 2])
 
 # translate coordinates starting point (x,y,z)
 # optimum (-5,-5,0)
